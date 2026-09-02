@@ -1,0 +1,834 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DevFlow | CI/CD Pipeline</title>
+
+    <meta name="description"
+          content="A professional CI/CD demonstration website powered by GitHub Actions and Vercel.">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, Arial, Helvetica, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+            line-height: 1.6;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        nav {
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .nav-container {
+            max-width: 1150px;
+            margin: auto;
+            height: 72px;
+            padding: 0 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 21px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #475569;
+            font-size: 15px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        /* ================= HERO ================= */
+
+        .hero {
+            min-height: 650px;
+            display: flex;
+            align-items: center;
+            background:
+                radial-gradient(circle at 80% 20%, #dbeafe 0, transparent 30%),
+                radial-gradient(circle at 10% 80%, #e0e7ff 0, transparent 28%),
+                #f8fafc;
+        }
+
+        .hero-container {
+            max-width: 1150px;
+            width: 100%;
+            margin: auto;
+            padding: 80px 25px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 70px;
+            align-items: center;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 15px;
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .hero h1 {
+            font-size: clamp(42px, 6vw, 68px);
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 25px;
+        }
+
+        .hero h1 span {
+            color: #2563eb;
+        }
+
+        .hero-description {
+            max-width: 620px;
+            font-size: 19px;
+            color: #64748b;
+            margin-bottom: 35px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 13px 23px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            transition: 0.25s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+        }
+
+        /* ================= PIPELINE CARD ================= */
+
+        .pipeline-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.1);
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 25px;
+        }
+
+        .terminal-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: #cbd5e1;
+        }
+
+        .terminal-title {
+            margin-left: auto;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 17px 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .pipeline-step:last-child {
+            border-bottom: none;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #eff6ff;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+        }
+
+        .step-info {
+            flex: 1;
+        }
+
+        .step-info strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .step-info small {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .check {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        /* ================= SECTIONS ================= */
+
+        section {
+            padding: 100px 25px;
+        }
+
+        .section-container {
+            max-width: 1150px;
+            margin: auto;
+        }
+
+        .section-heading {
+            text-align: center;
+            max-width: 700px;
+            margin: auto;
+            margin-bottom: 55px;
+        }
+
+        .section-heading h2 {
+            font-size: 38px;
+            margin-bottom: 14px;
+            letter-spacing: -1px;
+        }
+
+        .section-heading p {
+            color: #64748b;
+            font-size: 17px;
+        }
+
+        /* ================= FEATURES ================= */
+
+        .features {
+            background: white;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .feature-card {
+            padding: 30px;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            background: #ffffff;
+            transition: 0.25s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+            border-color: #bfdbfe;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #eff6ff;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 19px;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        /* ================= HOW IT WORKS ================= */
+
+        .process {
+            background: #f1f5f9;
+        }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .process-card {
+            position: relative;
+            background: white;
+            border-radius: 15px;
+            padding: 28px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .process-number {
+            font-size: 13px;
+            font-weight: 800;
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+
+        .process-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .process-card p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* ================= TECHNOLOGY ================= */
+
+        .tech {
+            background: white;
+        }
+
+        .tech-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .tech-item {
+            padding: 14px 23px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            background: #0f172a;
+            color: white;
+            padding: 45px 25px;
+        }
+
+        .footer-container {
+            max-width: 1150px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .footer-badge {
+            padding: 8px 14px;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 900px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .process-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 43px;
+            }
+
+            .hero-description {
+                font-size: 17px;
+            }
+
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            section {
+                padding: 70px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= NAVIGATION ================= -->
+
+<nav>
+    <div class="nav-container">
+
+        <div class="logo">
+            <div class="logo-icon">D</div>
+            DevFlow
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#process">Pipeline</a></li>
+            <li><a href="#technology">Technology</a></li>
+        </ul>
+
+    </div>
+</nav>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero" id="home">
+
+    <div class="hero-container">
+
+        <div>
+
+            <div class="status">
+                <span class="status-dot"></span>
+                Deployment Pipeline Active
+            </div>
+
+            <h1>
+                Build. Test.<br>
+                <span>Deploy.</span> Automatically.
+            </h1>
+
+            <p class="hero-description">
+                A professional demonstration of Continuous Integration
+                and Continuous Deployment using GitHub Actions and Vercel.
+            </p>
+
+            <div class="buttons">
+                <a href="#process" class="btn btn-primary">
+                    Explore Pipeline
+                </a>
+
+                <a href="#technology" class="btn btn-secondary">
+                    View Technology
+                </a>
+            </div>
+
+        </div>
+
+
+        <!-- Pipeline visualization -->
+
+        <div class="pipeline-card">
+
+            <div class="terminal-header">
+                <span class="terminal-dot"></span>
+                <span class="terminal-dot"></span>
+                <span class="terminal-dot"></span>
+
+                <span class="terminal-title">
+                    CI/CD STATUS
+                </span>
+            </div>
+
+            <div class="pipeline-step">
+
+                <div class="step-icon">01</div>
+
+                <div class="step-info">
+                    <strong>Code Push</strong>
+                    <small>GitHub main branch</small>
+                </div>
+
+                <div class="check">✓</div>
+
+            </div>
+
+            <div class="pipeline-step">
+
+                <div class="step-icon">02</div>
+
+                <div class="step-info">
+                    <strong>Build & Verify</strong>
+                    <small>GitHub Actions</small>
+                </div>
+
+                <div class="check">✓</div>
+
+            </div>
+
+            <div class="pipeline-step">
+
+                <div class="step-icon">03</div>
+
+                <div class="step-info">
+                    <strong>Deployment</strong>
+                    <small>Vercel Production</small>
+                </div>
+
+                <div class="check">✓</div>
+
+            </div>
+
+            <div class="pipeline-step">
+
+                <div class="step-icon">04</div>
+
+                <div class="step-info">
+                    <strong>Application Live</strong>
+                    <small>Production environment</small>
+                </div>
+
+                <div class="check">✓</div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FEATURES ================= -->
+
+<section class="features" id="features">
+
+    <div class="section-container">
+
+        <div class="section-heading">
+
+            <h2>Modern CI/CD Workflow</h2>
+
+            <p>
+                Automate the software delivery process from source code
+                to production with a reliable deployment pipeline.
+            </p>
+
+        </div>
+
+
+        <div class="feature-grid">
+
+            <div class="feature-card">
+
+                <div class="feature-icon">CI</div>
+
+                <h3>Continuous Integration</h3>
+
+                <p>
+                    Every code change is tracked through GitHub,
+                    allowing the project to maintain a consistent
+                    and version-controlled codebase.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">⚡</div>
+
+                <h3>Automated Workflow</h3>
+
+                <p>
+                    GitHub Actions automatically executes the deployment
+                    workflow whenever new code is pushed to the main branch.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">CD</div>
+
+                <h3>Continuous Deployment</h3>
+
+                <p>
+                    Successful workflow executions automatically publish
+                    the latest application version to the production environment.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= PROCESS ================= -->
+
+<section class="process" id="process">
+
+    <div class="section-container">
+
+        <div class="section-heading">
+
+            <h2>How the Pipeline Works</h2>
+
+            <p>
+                Four simple stages transform a source-code change
+                into a live production deployment.
+            </p>
+
+        </div>
+
+
+        <div class="process-grid">
+
+            <div class="process-card">
+
+                <div class="process-number">STEP 01</div>
+
+                <h3>Developer Push</h3>
+
+                <p>
+                    A developer modifies the application and pushes
+                    the changes to the GitHub main branch.
+                </p>
+
+            </div>
+
+
+            <div class="process-card">
+
+                <div class="process-number">STEP 02</div>
+
+                <h3>GitHub Actions</h3>
+
+                <p>
+                    The configured workflow detects the push event
+                    and starts the automated deployment process.
+                </p>
+
+            </div>
+
+
+            <div class="process-card">
+
+                <div class="process-number">STEP 03</div>
+
+                <h3>Deployment</h3>
+
+                <p>
+                    The workflow uses the Vercel CLI and securely stored
+                    credentials to deploy the application.
+                </p>
+
+            </div>
+
+
+            <div class="process-card">
+
+                <div class="process-number">STEP 04</div>
+
+                <h3>Live Application</h3>
+
+                <p>
+                    The latest version becomes available through the
+                    production URL hosted by Vercel.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= TECHNOLOGY ================= -->
+
+<section class="tech" id="technology">
+
+    <div class="section-container">
+
+        <div class="section-heading">
+
+            <h2>Technology Stack</h2>
+
+            <p>
+                Technologies used to build and automate this
+                CI/CD demonstration project.
+            </p>
+
+        </div>
+
+
+        <div class="tech-grid">
+
+            <div class="tech-item">HTML5</div>
+
+            <div class="tech-item">CSS3</div>
+
+            <div class="tech-item">Git</div>
+
+            <div class="tech-item">GitHub</div>
+
+            <div class="tech-item">GitHub Actions</div>
+
+            <div class="tech-item">Vercel</div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <div class="footer-container">
+
+        <div>
+
+            <div class="logo">
+                <div class="logo-icon">D</div>
+                DevFlow
+            </div>
+
+            <p class="footer-text">
+                Automated CI/CD demonstration project.
+            </p>
+
+        </div>
+
+        <div class="footer-badge">
+            GitHub Actions • Vercel
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>
+```
+
+
+
+
